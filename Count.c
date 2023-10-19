@@ -1,9 +1,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <string.h>
+#include <Windows.h>
+#define MAX_OUTPUT_SIZE (3 * MAX_ALLOWED_NUM + 1)
+#define MAX_ALLOWED_NUM 983
 
 int main()
 {
     int num;
+    char output[MAX_OUTPUT_SIZE] = ""; 
+    output[0] = '\0';
 
     printf(" _____ _     _____  ___   _____   _____ _   _  _____   _____ _   _ _________________\n"
         "|  ___| |   |_   _|/ _ \\ /  ___| |_   _| | | ||  ___| |_   _| | | |_   _| ___ \\  _  \\\n"
@@ -14,33 +20,61 @@ int main()
 
     do {
         printf("+ --------------------------------------------------------------------------------- +\n"
-               "|                    Enter any positive integer ---- 0 to Exit                      |\n"
-               "+ --------------------------------------------------------------------------------- +\n\n");
+               "|                  Enter any positive integer (<%d) --- 0 to Exit                  |\n"
+               "+ --------------------------------------------------------------------------------- +\n\n", MAX_ALLOWED_NUM + 1);
+        
+        // Check if scanf successfully scanned an integer
         do {
             printf("Number: ");
             scanf("%d", &num);
+            output[0] = '\0';
 
-            // Check if scanf successfully scanned an integer
-            if (num < 0) {
-                printf("ERROR: Invalid input. Please enter a positive integer.\n");
+            if (num < 0 || num > MAX_ALLOWED_NUM) {
+                printf("ERROR: Invalid input. Please enter a positive integer (<%d).\n", MAX_ALLOWED_NUM + 1); 
 
                 // Clear the input buffer to prevent an infinite loop
                 while (getchar() != '\n') {}
             }
-        } while (num < 0);
+        } while (num < 0 || num > MAX_ALLOWED_NUM); 
 
-        for (int i = 1; i <= num; i++)
-        {
-            if (i < num)
-            {
+        // Print 1+1's
+        for (int i = 1; i <= num; i++) {
+            if (i < num) {
                 printf("1+");
+                strcat(output, "1+");
             }
-            else
-            {
+            else {
                 printf("1\n\n");
+                strcat(output, "1");
             }
         }
 
+        // Cpoy to clipboard
+        if (OpenClipboard(NULL)) {
+
+            // Allocate global memory to hold the output string
+            HGLOBAL clipboardData = GlobalAlloc(GMEM_MOVEABLE, strlen(output) + 1);
+            if (clipboardData != NULL) {
+
+                // Lock the global memory and copy the output string into it
+                char* clipboardText = (char*)GlobalLock(clipboardData);
+                strcpy(clipboardText, output);
+                GlobalUnlock(clipboardData);
+
+                // Empty the clipboard and set the new text data
+                EmptyClipboard();
+                SetClipboardData(CF_TEXT, clipboardData);
+
+                // Close the clipboard
+                CloseClipboard();
+            }
+            else {
+                printf("Error: Failed to allocate memory for clipboard data.\n");
+            }
+        }
+        else {
+            printf("Error: Failed to open the clipboard.\n");
+        }
     } while (num != 0); 
 
     printf("                                                                     ***./***,*,\n");
