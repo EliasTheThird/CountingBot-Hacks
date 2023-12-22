@@ -142,7 +142,7 @@ void modeTroll() {
             index = (index + 1) % 2; 
         }
 
-        putchar('\n');     
+        printf("\n\n");     
 
         clipboardCopy(output);
 
