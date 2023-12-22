@@ -1,4 +1,4 @@
-# CountingBot-Hacks
+# CountingBot-Troll
 The program provides a playful way to represent positive integers as a sum of numbers, allowing users to visualize the concept of addition.
 
 New in [v3]
